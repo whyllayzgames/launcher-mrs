@@ -1,0 +1,46 @@
+{
+  "name": "luncher-mrs",
+  "version": "1.0.5",
+  "description": "Luncher MyRealSim (MRS)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --publish always",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "build": {
+    "appId": "com.mrs.launcher",
+    "productName": "Launcher MRS",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "whyllayzgames",
+        "repo": "launcher-mrs"
+      }
+    ]
+  },
+
+  "dependencies": {
+    "electron-updater": "^6.7.0"
+  },
+
+  "devDependencies": {
+    "asar": "^3.2.0",
+    "electron": "^39.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2"
+  }
+}

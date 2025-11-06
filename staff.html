@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Support Staff - MRS</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin: 0 0 10px 0;
+      color: #9ca3af;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.4fr 2fr;
+      gap: 16px;
+      flex: 1;
+      margin-top: 16px;
+      min-height: 0;
+    }
+
+    .card {
+      padding: 14px;
+      border-radius: 10px;
+      background: #0b1120;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card h2 {
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .status {
+      margin-top: 6px;
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    .status.ok {
+      color: #22c55e;
+    }
+
+    .status.err {
+      color: #ef4444;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .tickets-list {
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px;
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 6px;
+    }
+
+    .ticket-item {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      margin-bottom: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .ticket-item:hover {
+      background: #111827;
+    }
+
+    .ticket-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ticket-item-pseudo {
+      font-weight: bold;
+    }
+
+    .ticket-item-type {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .badge-status {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    .badge-ouvert {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+    }
+
+    .badge-en_cours {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+    }
+
+    .badge-clos {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+
+    .chat-box {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 8px;
+      padding-right: 4px;
+    }
+
+    .chat-message {
+      margin-bottom: 6px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      max-width: 100%;
+    }
+
+    .msg-user {
+      background: rgba(37, 99, 235, 0.15);
+      align-self: flex-start;
+    }
+
+    .msg-staff {
+      background: rgba(34, 197, 94, 0.15);
+      align-self: flex-end;
+    }
+
+    .chat-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 2px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .chat-input-row textarea {
+      margin-bottom: 0;
+      min-height: 60px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>Support Staff MRS</h1>
+        <p>Interface interne pour la gestion des tickets.</p>
+      </div>
+      <div class="small">
+        Raccourci d’ouverture : Ctrl + Shift + S
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Colonne gauche : login + liste tickets -->
+    <div class="card">
+      <h2>Connexion staff</h2>
+
+      <div id="staffLogin">
+        <div style="display:flex; gap:6px; margin-bottom:6px;">
+          <input id="staffPseudo" type="text" placeholder="Pseudo staff">
+          <input id="staffPassword" type="password" placeholder="Mot de passe staff">
+          <button id="staffLoginBtn" type="button">Connexion</button>
+        </div>
+        <div id="staffLoginStatus" class="status"></div>
+        <div class="small">
+          Accès réservé aux membres du staff MRS.
+        </div>
+      </div>
+
+      <div id="staffPanel" style="display:none; flex:1; min-height:0; display:flex; flex-direction:column; margin-top:8px;">
+        <div class="small" id="staffWelcome"></div>
+
+        <div class="small" style="margin-top:6px;">Liste des tickets</div>
+        <div class="tickets-list" id="staffTicketsList"></div>
+      </div>
+    </div>
+
+    <!-- Colonne droite : détail + chat -->
+    <div class="card">
+      <h2>Détail du ticket</h2>
+
+      <div class="small" id="staffTicketInfo"></div>
+
+      <div class="chat-box">
+        <div class="chat-messages" id="staffChatMessages">
+          <div class="small">Sélectionne un ticket dans la liste pour voir la conversation.</div>
+        </div>
+
+        <div class="chat-input-row">
+          <textarea id="staffReplyText" placeholder="Réponse staff..."></textarea>
+          <button type="button" id="staffReplyBtn">Répondre</button>
+        </div>
+
+        <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+          <button type="button" id="staffMarkOpenBtn">Marquer: Ouvert</button>
+          <button type="button" id="staffMarkInProgressBtn">Marquer: En cours</button>
+          <button type="button" id="staffMarkClosedBtn">Marquer: Clos</button>
+          <button type="button" id="staffTakeBtn">Prendre en charge</button>
+        </div>
+
+        <div id="staffChatStatus" class="status"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STAFF_PASSWORD = 'MRS-STAFF-2025'; // change-le si tu veux
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleString();
+    }
+
+    function statusLabel(status) {
+      switch (status) {
+        case 'ouvert': return 'Ouvert';
+        case 'en_cours': return 'En cours';
+        case 'clos': return 'Clos';
+        default: return status || 'Inconnu';
+      }
+    }
+
+    function statusClass(status) {
+      if (status === 'ouvert') return 'badge-ouvert';
+      if (status === 'en_cours') return 'badge-en_cours';
+      if (status === 'clos') return 'badge-clos';
+      return '';
+    }
+
+    const staffLoginDiv = document.getElementById('staffLogin');
+    const staffPanelDiv = document.getElementById('staffPanel');
+    const staffLoginStatus = document.getElementById('staffLoginStatus');
+    const staffLoginBtn = document.getElementById('staffLoginBtn');
+    const staffPseudoInput = document.getElementById('staffPseudo');
+    const staffPasswordInput = document.getElementById('staffPassword');
+    const staffWelcome = document.getElementById('staffWelcome');
+
+    const staffTicketsListEl = document.getElementById('staffTicketsList');
+    const staffChatMessages = document.getElementById('staffChatMessages');
+    const staffTicketInfo = document.getElementById('staffTicketInfo');
+    const staffReplyText = document.getElementById('staffReplyText');
+    const staffReplyBtn = document.getElementById('staffReplyBtn');
+    const staffChatStatus = document.getElementById('staffChatStatus');
+
+    const staffMarkOpenBtn = document.getElementById('staffMarkOpenBtn');
+    const staffMarkInProgressBtn = document.getElementById('staffMarkInProgressBtn');
+    const staffMarkClosedBtn = document.getElementById('staffMarkClosedBtn');
+    const staffTakeBtn = document.getElementById('staffTakeBtn');
+
+    let staffLoggedIn = false;
+    let staffName = '';
+    let currentStaffTicketId = null;
+
+    function setStaffLoginStatus(message, type) {
+      staffLoginStatus.textContent = message || '';
+      staffLoginStatus.className = 'status ' + (type || '');
+    }
+
+    function setStaffChatStatus(message, type) {
+      staffChatStatus.textContent = message || '';
+      staffChatStatus.className = 'status ' + (type || '');
+    }
+
+    staffLoginBtn.addEventListener('click', () => {
+      const pseudo = staffPseudoInput.value.trim();
+      const password = staffPasswordInput.value.trim();
+
+      if (!pseudo || !password) {
+        setStaffLoginStatus('Pseudo et mot de passe requis.', 'err');
+        return;
+      }
+
+      if (password !== STAFF_PASSWORD) {
+        setStaffLoginStatus('Mot de passe invalide.', 'err');
+        return;
+      }
+
+      staffLoggedIn = true;
+      staffName = pseudo;
+      setStaffLoginStatus('', '');
+      staffLoginDiv.style.display = 'none';
+      staffPanelDiv.style.display = 'flex';
+      staffWelcome.textContent = `Connecté en tant que ${staffName}.`;
+
+      refreshStaffTickets();
+    });
+
+    async function refreshStaffTickets() {
+      if (!window.launcherAPI?.getAllTickets) return;
+
+      staffTicketsListEl.innerHTML = 'Chargement des tickets...';
+
+      try {
+        const res = await window.launcherAPI.getAllTickets();
+        if (!res || !res.ok) {
+          staffTicketsListEl.innerHTML = '<div class="small">Erreur lors du chargement des tickets.</div>';
+          return;
+        }
+
+        const tickets = res.tickets || [];
+        if (tickets.length === 0) {
+          staffTicketsListEl.innerHTML = '<div class="small">Aucun ticket pour le moment.</div>';
+          staffChatMessages.innerHTML = '<div class="small">Sélectionne un ticket dans la liste pour voir la conversation.</div>';
+          staffTicketInfo.textContent = '';
+          return;
+        }
+
+        staffTicketsListEl.innerHTML = '';
+        tickets.forEach(ticket => {
+          const item = document.createElement('div');
+          item.className = 'ticket-item';
+          item.addEventListener('click', () => {
+            openStaffTicket(ticket.id);
+          });
+
+          const header = document.createElement('div');
+          header.className = 'ticket-item-header';
+
+          const left = document.createElement('div');
+          const pseudoEl = document.createElement('div');
+          pseudoEl.className = 'ticket-item-pseudo';
+          pseudoEl.textContent = `${ticket.pseudo || 'Joueur'} (${ticket.type || 'Autre'})`;
+
+          const dateEl = document.createElement('div');
+          dateEl.className = 'ticket-item-type';
+          dateEl.textContent = formatDate(ticket.createdAt);
+
+          left.appendChild(pseudoEl);
+          left.appendChild(dateEl);
+
+          const statusBadge = document.createElement('div');
+          statusBadge.className = 'badge-status ' + statusClass(ticket.status);
+          statusBadge.textContent = statusLabel(ticket.status);
+
+          header.appendChild(left);
+          header.appendChild(statusBadge);
+
+          item.appendChild(header);
+
+          staffTicketsListEl.appendChild(item);
+        });
+
+      } catch (e) {
+        console.error(e);
+        staffTicketsListEl.innerHTML = '<div class="small">Erreur lors du chargement des tickets.</div>';
+      }
+    }
+
+    async function openStaffTicket(ticketId) {
+      currentStaffTicketId = ticketId;
+      setStaffChatStatus('', '');
+
+      if (!window.launcherAPI?.getTicket) return;
+
+      staffChatMessages.innerHTML = 'Chargement du ticket...';
+      staffTicketInfo.textContent = '';
+
+      try {
+        const res = await window.launcherAPI.getTicket(ticketId);
+        if (!res || !res.ok || !res.ticket) {
+          staffChatMessages.innerHTML = '<div class="small">Impossible de charger ce ticket.</div>';
+          return;
+        }
+
+        const ticket = res.ticket;
+
+        renderChatMessages(ticket, staffChatMessages);
+
+        const infoParts = [];
+        infoParts.push(`Ticket #${ticket.id}`);
+        infoParts.push(`Joueur : ${ticket.pseudo || 'Inconnu'}`);
+        infoParts.push(`Type : ${ticket.type || 'N/A'}`);
+        infoParts.push(`Statut : ${statusLabel(ticket.status)}`);
+        if (ticket.staff) infoParts.push(`Pris en charge par : ${ticket.staff}`);
+
+        staffTicketInfo.textContent = infoParts.join(' | ');
+
+        if (ticket.status === 'clos') {
+          setStaffChatStatus('Ce ticket est clos. Tu peux le rouvrir ou laisser tel quel.', 'err');
+        } else {
+          setStaffChatStatus('Tu peux répondre à ce ticket ou modifier son statut.', 'ok');
+        }
+
+      } catch (e) {
+        console.error(e);
+        staffChatMessages.innerHTML = '<div class="small">Erreur lors du chargement du ticket.</div>';
+      }
+    }
+
+    staffReplyBtn.addEventListener('click', async () => {
+      if (!currentStaffTicketId) {
+        setStaffChatStatus('Sélectionne d’abord un ticket.', 'err');
+        return;
+      }
+
+      const msg = staffReplyText.value.trim();
+      if (!msg) {
+        setStaffChatStatus('Message vide.', 'err');
+        return;
+      }
+
+      if (!window.launcherAPI?.addTicketResponse) return;
+
+      staffReplyBtn.disabled = true;
+      setStaffChatStatus('Envoi de la réponse...', '');
+
+      try {
+        const res = await window.launcherAPI.addTicketResponse(currentStaffTicketId, 'staff', staffName || 'Staff', msg);
+        if (!res || !res.ok) {
+          setStaffChatStatus('Erreur lors de l’envoi de la réponse.', 'err');
+          staffReplyBtn.disabled = false;
+          return;
+        }
+
+        staffReplyText.value = '';
+
+        const refreshed = await window.launcherAPI.getTicket(currentStaffTicketId);
+        if (refreshed && refreshed.ok && refreshed.ticket) {
+          renderChatMessages(refreshed.ticket, staffChatMessages);
+          setStaffChatStatus('Réponse envoyée.', 'ok');
+          refreshStaffTickets();
+        }
+
+      } catch (e) {
+        console.error(e);
+        setStaffChatStatus('Erreur inattendue.', 'err');
+      } finally {
+        staffReplyBtn.disabled = false;
+      }
+    });
+
+    async function setTicketStatus(status) {
+      if (!currentStaffTicketId) {
+        setStaffChatStatus('Sélectionne un ticket.', 'err');
+        return;
+      }
+      if (!window.launcherAPI?.updateTicketStatus) return;
+
+      try {
+        const res = await window.launcherAPI.updateTicketStatus(currentStaffTicketId, status);
+        if (!res || !res.ok) {
+          setStaffChatStatus('Erreur lors du changement de statut.', 'err');
+          return;
+        }
+
+        const refreshed = await window.launcherAPI.getTicket(currentStaffTicketId);
+        if (refreshed && refreshed.ok && refreshed.ticket) {
+          renderChatMessages(refreshed.ticket, staffChatMessages);
+          setStaffChatStatus(`Statut mis à jour : ${statusLabel(status)}`, 'ok');
+          refreshStaffTickets();
+        }
+      } catch (e) {
+        console.error(e);
+        setStaffChatStatus('Erreur inattendue.', 'err');
+      }
+    }
+
+    staffMarkOpenBtn.addEventListener('click', () => setTicketStatus('ouvert'));
+    staffMarkInProgressBtn.addEventListener('click', () => setTicketStatus('en_cours'));
+    staffMarkClosedBtn.addEventListener('click', () => setTicketStatus('clos'));
+
+    staffTakeBtn.addEventListener('click', async () => {
+      if (!currentStaffTicketId) {
+        setStaffChatStatus('Sélectionne un ticket.', 'err');
+        return;
+      }
+      if (!window.launcherAPI?.takeTicket) return;
+
+      try {
+        const res = await window.launcherAPI.takeTicket(currentStaffTicketId, staffName || 'Staff');
+        if (!res || !res.ok) {
+          setStaffChatStatus('Erreur lors de la prise en charge.', 'err');
+          return;
+        }
+
+        const refreshed = await window.launcherAPI.getTicket(currentStaffTicketId);
+        if (refreshed && refreshed.ok && refreshed.ticket) {
+          renderChatMessages(refreshed.ticket, staffChatMessages);
+          setStaffChatStatus('Ticket pris en charge.', 'ok');
+          refreshStaffTickets();
+        }
+
+      } catch (e) {
+        console.error(e);
+        setStaffChatStatus('Erreur inattendue.', 'err');
+      }
+    });
+
+    function renderChatMessages(ticket, container) {
+      container.innerHTML = '';
+
+      const headerInfo = document.createElement('div');
+      headerInfo.className = 'small';
+      headerInfo.style.marginBottom = '6px';
+      headerInfo.textContent = `Ticket #${ticket.id} — Statut : ${statusLabel(ticket.status)} — Joueur : ${ticket.pseudo || 'Inconnu'}`;
+      container.appendChild(headerInfo);
+
+      const responses = Array.isArray(ticket.responses) ? ticket.responses : [];
+
+      if (responses.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'small';
+        empty.textContent = 'Aucun message pour ce ticket.';
+        container.appendChild(empty);
+        return;
+      }
+
+      responses.forEach(r => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message ' + (r.from === 'staff' ? 'msg-staff' : 'msg-user');
+
+        const meta = document.createElement('div');
+        meta.className = 'chat-meta';
+        meta.textContent = `${r.author || (r.from === 'staff' ? 'Staff' : 'Joueur')} — ${formatDate(r.date)}`;
+
+        const text = document.createElement('div');
+        text.textContent = r.message || '';
+
+        msgDiv.appendChild(meta);
+        msgDiv.appendChild(text);
+
+        container.appendChild(msgDiv);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+  </script>
+</body>
+</html>
